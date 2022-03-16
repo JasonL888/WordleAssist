@@ -65,24 +65,36 @@ class WordleAssist:
                 if len(line.strip()) == 5 and not any(alphabet.isupper() for alphabet in line):
                     out_file.write(line)
 
-    def getPositionPattern(self, char, guess, result):
-        logger.debug("char:%s" % char)
+    # if guess=arise, result=MMXXX, then pattern ar[a-z][a-z][a-z]
+    def getPositionPattern(self, guess, result):
         logger.debug("guess:%s" % guess)
         logger.debug("result:%s" % result)
         pattern = ""
         foundCharArray = []
         for i in range(0,5):
-            if result[i] == char:
+            if result[i] == 'M':
                 pattern = pattern + guess[i]
                 foundCharArray.append(guess[i])
-                if result[i] == 'P':
-                    self.addIncludeChars([guess[i]])
             else:
                 pattern = pattern + "[a-z]"
                 if result[i] == 'X' and guess[i] not in foundCharArray:
                     self.addExcludeChars([guess[i]])
         logger.debug("pattern:%s" % pattern)
-        return(pattern)
+        return([pattern])
+
+    # if guess=arise, result=PPXXX, then pattern ["a[a-z][a-z][a-z][a-z]","[a-z]r[a-z][a-z][a-z]"]
+    def getPositionMisPattern(self, guess, result):
+        logger.debug("guess:%s" % guess)
+        logger.debug("result:%s" % result)
+        patternArray = []
+        for i in range(0,5):
+            pattern = ""
+            if result[i] == 'P':
+                pattern = ("[a-z]" * i) + guess[i] + ("[a-z]" * (4-i))
+                patternArray.append(pattern)
+                self.addIncludeChars([guess[i]])
+        logger.debug("pattern:%s" % patternArray)
+        return(patternArray)
 
     def getShortList(self, guess, result):
         logger.debug("guess:%s" % guess)
@@ -90,9 +102,9 @@ class WordleAssist:
         result = result.upper()
         # if there's a match, create pattern and add to positionMatch
         if re.search('M', result):
-            self.addPositionMatch([self.getPositionPattern('M', guess, result)])
+            self.addPositionMatch(self.getPositionPattern(guess, result))
         if re.search('P', result):
-            self.addPositionMisMatch([self.getPositionPattern('P', guess, result)])
+            self.addPositionMisMatch(self.getPositionMisPattern(guess, result))
 
         if result == 'XXXXX':
             for i in range(0,5):
@@ -103,10 +115,16 @@ class WordleAssist:
             if not any(excludeChar in word for excludeChar in self.excludeChars) and \
                all(includeChar in word for includeChar in self.includeChars):
                 if len(self.positionMatch) == 0 and len(self.positionMisMatch) == 0:
+                    logger.debug("no position nor mismatch pattern - added word:%s" % word)
                     out_array.append(word)
+                elif len(self.positionMatch) == 0 and len(self.positionMisMatch) > 0:
+                    if not any( re.search(mispositionpattern, word) for mispositionpattern in self.positionMisMatch ):
+                        logger.debug("no position but there's a mismatch pattern - added word:%s" % word)
+                        out_array.append(word)
                 else:
                     if all( re.search(positionpattern, word) for positionpattern in self.positionMatch) and \
                        not any( re.search(mispositionpattern, word) for mispositionpattern in self.positionMisMatch ):
+                        logger.debug("there's position and mismatch pattern - added word:%s" % word)
                         out_array.append(word)
         self.shortlistWords = out_array
         return( self.shortlistWords )
