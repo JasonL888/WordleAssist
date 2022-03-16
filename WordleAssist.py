@@ -119,12 +119,12 @@ class WordleAssist:
                     out_array.append(word)
                 elif len(self.positionMatch) == 0 and len(self.positionMisMatch) > 0:
                     if not any( re.search(mispositionpattern, word) for mispositionpattern in self.positionMisMatch ):
-                        logger.debug("no position but there's a mismatch pattern - added word:%s" % word)
+                        logger.debug("no position but there's a mismatch pattern:%s - added word:%s" % (self.positionMisMatch, word))
                         out_array.append(word)
                 else:
                     if all( re.search(positionpattern, word) for positionpattern in self.positionMatch) and \
                        not any( re.search(mispositionpattern, word) for mispositionpattern in self.positionMisMatch ):
-                        logger.debug("there's position and mismatch pattern - added word:%s" % word)
+                        logger.debug("there's position:%s and mismatch pattern:%s - added word:%s" % (self.positionMatch,self.positionMisMatch,word))
                         out_array.append(word)
         self.shortlistWords = out_array
         return( self.shortlistWords )
