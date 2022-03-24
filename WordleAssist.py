@@ -29,7 +29,7 @@ class WordleAssist:
         logger.debug(includeCharArray)
         for includeChar in includeCharArray:
             if includeChar in self.excludeChars:
-                raise ValueException
+                continue
             if includeChar not in self.includeChars:
                 self.includeChars.append(includeChar)
 
@@ -37,7 +37,7 @@ class WordleAssist:
         logger.debug(excludeCharArray)
         for excludeChar in excludeCharArray:
             if excludeChar in self.includeChars:
-                raise ValueException
+                continue
             if excludeChar not in self.excludeChars:
                 self.excludeChars.append(excludeChar)
 
@@ -45,7 +45,7 @@ class WordleAssist:
         logger.debug(positionMatchArray)
         for positionMatch in positionMatchArray:
             if positionMatch in self.positionMisMatch:
-                raise ValueException
+                continue
             if positionMatch not in self.positionMatch:
                 self.positionMatch.append(positionMatch)
 
@@ -53,7 +53,7 @@ class WordleAssist:
         logger.debug(positionMisMatchArray)
         for positionMisMatch in positionMisMatchArray:
             if positionMisMatch in self.positionMatch:
-                raise ValueException
+                continue
             if positionMisMatch not in self.positionMisMatch:
                 self.positionMisMatch.append(positionMisMatch)
 
@@ -71,14 +71,19 @@ class WordleAssist:
         logger.debug("result:%s" % result)
         pattern = ""
         foundCharArray = []
+        potentialExcludeCharArray = []
         for i in range(0,5):
             if result[i] == 'M':
                 pattern = pattern + guess[i]
                 foundCharArray.append(guess[i])
             else:
                 pattern = pattern + "[a-z]"
-                if result[i] == 'X' and guess[i] not in foundCharArray:
-                    self.addExcludeChars([guess[i]])
+                if result[i] == 'X':
+                    #self.addExcludeChars([guess[i]])
+                    potentialExcludeCharArray.append(guess[i])
+        for potChar in potentialExcludeCharArray:
+            if potChar not in foundCharArray:
+                self.addExcludeChars([potChar])
         logger.debug("pattern:%s" % pattern)
         return([pattern])
 
@@ -93,6 +98,8 @@ class WordleAssist:
                 pattern = ("[a-z]" * i) + guess[i] + ("[a-z]" * (4-i))
                 patternArray.append(pattern)
                 self.addIncludeChars([guess[i]])
+            elif result[i] == 'X':
+                self.addExcludeChars([guess[i]])
         logger.debug("pattern:%s" % patternArray)
         return(patternArray)
 
