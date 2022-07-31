@@ -50,39 +50,39 @@ $(function(){
     }
   });
 
-  var Word = Backbone.Model.extend({
-    defaults: function() {
-      return {
-        word: "arise",
-        order: Words.nextOrder()
-      };
-    }
-  });
+  //var Word = Backbone.Model.extend({
+  //  defaults: function() {
+  //    return {
+  //      word: "arise",
+  //      order: Words.nextOrder()
+  //    };
+  //  }
+  //});
 
-  var WordList = Backbone.Collection.extend({
-    model: Word,
-    localStorage: new Backbone.LocalStorage("word-list"),
-    nextOrder: function() {
-      if (!this.length) return 1;
-      return this.last().get('order') + 1;
-    },
-    comparator: 'order'
-  });
+  //var WordList = Backbone.Collection.extend({
+  //  model: Word,
+  //  localStorage: new Backbone.LocalStorage("word-list"),
+  //  nextOrder: function() {
+  //    if (!this.length) return 1;
+  //    return this.last().get('order') + 1;
+  //  },
+  //  comparator: 'order'
+  //});
 
-  var Words = new WordList
+  //var Words = new WordList
 
-  var WordView = Backbone.View.extend({
-    tagName: "div",
-    template: _.template($('#word-item-template').html()),
-    events: {},
-    initialize: function() {
-      this.listenTo(this.model, 'change', this.render);
-    },
-    render: function() {
-      this.$el.html(this.template(this.model.toJSON()));
-      return this;
-    }
-  });
+  //var WordView = Backbone.View.extend({
+  //  tagName: "div",
+  //  template: _.template($('#word-item-template').html()),
+  //  events: {},
+  //  initialize: function() {
+  //    this.listenTo(this.model, 'change', this.render);
+  //  },
+  //  render: function() {
+  //    this.$el.html(this.template(this.model.toJSON()));
+  //    return this;
+  //  }
+  //});
 
   var AppView = Backbone.View.extend({
     el: $("#app_container"),
@@ -100,17 +100,18 @@ $(function(){
       this.listenTo(Guesses, 'reset', this.addAllGuess);
       this.listenTo(Guesses, 'all', this.render);
       this.listenTo(Guesses, 'invalid', function(model, error, options){
-        this.errorMsg.empty().append(error)
-        console.log('error:' + error )
+        this.errorMsg.show();
+        this.errorMsg.empty().append(error);
+        console.log('error:' + error );
       });
 
       Guesses.fetch();
 
       this.wordlist = this.$("#word-list")
 
-      this.listenTo(Words, 'add', this.addOneWord);
-      this.listenTo(Words, 'reset', this.addAllWords);
-      this.listenTo(Words, 'all', this.render);
+      //this.listenTo(Words, 'add', this.addOneWord);
+      //this.listenTo(Words, 'reset', this.addAllWords);
+      //this.listenTo(Words, 'all', this.render);
 
       //shortlistWords.forEach(function(item,index){
       //  Words.create({word:item});
@@ -138,25 +139,27 @@ $(function(){
         return;
       if (!this.guess.val() && !this.result.val() )
         return;
-      Guesses.create(
+      if (Guesses.create(
         {
           guess:this.guess.val().toLowerCase(),
           result:this.result.val().toLowerCase()
         },
         { validate: true }
-      );
-      this.guess.val('');
-      this.result.val('');
+      ) != false ) {
+        this.guess.val('');
+        this.result.val('');
+        this.errorMsg.hide();
+      }
     },
 
-    addOneWord: function(Word) {
-      var wordview = new WordView({model:Word});
-      this.$("#word-list").append(wordview.render().el);
-    },
+    //addOneWord: function(Word) {
+    //  var wordview = new WordView({model:Word});
+    //  this.$("#word-list").append(wordview.render().el);
+    //},
 
-    addAllWords: function() {
-      Words.each(this.addOneWord, this);
-    }
+    //addAllWords: function() {
+    //  Words.each(this.addOneWord, this);
+    //}
   });
 
   var App = new AppView;
