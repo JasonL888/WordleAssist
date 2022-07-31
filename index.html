@@ -22,13 +22,19 @@
     </div>
 
     <!-- Templates -->
-    <script type="text/template" id="item-template">
+    <script type="text/template" id="guess-item-template">
       <div class="view">
-        <input id="item-guess" type="text" value="<%- guess %>" />
-        <input id="item-result" type="text" value="<%- result %>" />
+        <label id="item-guess"><%- guess %></label>
+        <label id="item=result"><%- result %></label>
+        <a class="destroy">delete</a>
       </div>
     </script>
 
+    <script type="text/template" id="word-item-template">
+      <div class="view">
+        <label id="item-word"><%- word %></label>
+      </div>
+    </script>
 
 </body>
 </html>

@@ -12,7 +12,7 @@ $(function(){
 
   var GuessList = Backbone.Collection.extend({
     model: Guess,
-    localStorage: new Backbone.LocalStorage("wordle-assist"),
+    localStorage: new Backbone.LocalStorage("guest-result"),
     nextOrder: function() {
       if (!this.length) return 1;
       return this.last().get('order') + 1;
@@ -24,7 +24,48 @@ $(function(){
 
   var GuessView = Backbone.View.extend({
     tagName: "li",
-    template: _.template($('#item-template').html()),
+    template: _.template($('#guess-item-template').html()),
+    events: {
+      "click a.destroy": "clear"
+    },
+    initialize: function() {
+      this.listenTo(this.model, 'change', this.render);
+      this.listenTo(this.model, 'destroy', this.remove);
+    },
+    render: function() {
+      this.$el.html(this.template(this.model.toJSON()));
+      return this;
+    },
+
+    clear: function() {
+      this.model.destroy();
+    }
+  });
+
+  var Word = Backbone.Model.extend({
+    defaults: function() {
+      return {
+        word: "arise",
+        order: Words.nextOrder()
+      };
+    }
+  });
+
+  var WordList = Backbone.Collection.extend({
+    model: Word,
+    localStorage: new Backbone.LocalStorage("word-list"),
+    nextOrder: function() {
+      if (!this.length) return 1;
+      return this.last().get('order') + 1;
+    },
+    comparator: 'order'
+  });
+
+  var Words = new WordList
+
+  var WordView = Backbone.View.extend({
+    tagName: "div",
+    template: _.template($('#word-item-template').html()),
     events: {},
     initialize: function() {
       this.listenTo(this.model, 'change', this.render);
@@ -35,48 +76,48 @@ $(function(){
     }
   });
 
-  var ShortList = Backbone.Model.extend({
-    defaults: function() {
-      return{
-        words: shortlistWords
-      };
-    }
-  });
-
-  var ShortListView = Backbone.View.extend({
-
-  });
-
   var AppView = Backbone.View.extend({
     el: $("#app_container"),
 
     events: {
-      "keypress #new-guess": "createOnEnter"
+      "keypress #new-guess": "createGuessOnEnter"
     },
 
     initialize: function() {
       this.guess = this.$("#guess");
       this.result = this.$("#result");
 
-      this.listenTo(Guesses, 'add', this.addOne);
-      this.listenTo(Guesses, 'reset', this.addAll);
+      this.listenTo(Guesses, 'add', this.addOneGuess);
+      this.listenTo(Guesses, 'reset', this.addAllGuess);
       this.listenTo(Guesses, 'all', this.render);
 
       Guesses.fetch();
+
+      this.wordlist = this.$("#word-list")
+
+      this.listenTo(Words, 'add', this.addOneWord);
+      this.listenTo(Words, 'reset', this.addAllWords);
+      this.listenTo(Words, 'all', this.render);
+
+      //shortlistWords.forEach(function(item,index){
+      //  Words.create({word:item});
+      //});
     },
 
-    render: function() {},
+    render: function() {
 
-    addOne: function(Guess) {
-      var view = new GuessView({model:Guess});
-      this.$("#guess-list").append(view.render().el);
     },
 
-    addAll: function() {
-      Guesses.each(this.addOne, this);
+    addOneGuess: function(Guess) {
+      var guessview = new GuessView({model:Guess});
+      this.$("#guess-list").append(guessview.render().el);
     },
 
-    createOnEnter: function(e) {
+    addAllGuess: function() {
+      Guesses.each(this.addOneGuess, this);
+    },
+
+    createGuessOnEnter: function(e) {
       var ENTER_KEY = 13
       console.log('received:' + e);
       //if not Enter keyCode 13
@@ -91,6 +132,15 @@ $(function(){
       });
       this.guess.val('');
       this.result.val('');
+    },
+
+    addOneWord: function(Word) {
+      var wordview = new WordView({model:Word});
+      this.$("#word-list").append(wordview.render().el);
+    },
+
+    addAllWords: function() {
+      Words.each(this.addOneWord, this);
     }
   });
 
