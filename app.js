@@ -7,6 +7,14 @@ $(function(){
         result: "mxpxx",
         order: Guesses.nextOrder()
       };
+    },
+    validate: function(attrs, options) {
+      if (!/^[a-zA-Z]{5,5}$/.test(attrs.guess)) {
+        return "guess[" + attrs.guess + "] must be 5 characters";
+      }
+      else if (!/^[mxpMXP]{5,5}$/.test(attrs.result)) {
+        return "result[" + attrs.result + "] must be 5 characters of m:match,p:partial,x:no match";
+      }
     }
   });
 
@@ -80,16 +88,21 @@ $(function(){
     el: $("#app_container"),
 
     events: {
-      "keypress #new-guess": "createGuessOnEnter"
+      "keypress #result": "createGuessOnEnter"
     },
 
     initialize: function() {
       this.guess = this.$("#guess");
       this.result = this.$("#result");
+      this.errorMsg = this.$("#error-msg")
 
       this.listenTo(Guesses, 'add', this.addOneGuess);
       this.listenTo(Guesses, 'reset', this.addAllGuess);
       this.listenTo(Guesses, 'all', this.render);
+      this.listenTo(Guesses, 'invalid', function(model, error, options){
+        this.errorMsg.empty().append(error)
+        console.log('error:' + error )
+      });
 
       Guesses.fetch();
 
@@ -126,10 +139,12 @@ $(function(){
       if (!this.guess.val() && !this.result.val() )
         return;
       Guesses.create(
-      {
-        guess:this.guess.val(),
-        result:this.result.val()
-      });
+        {
+          guess:this.guess.val().toLowerCase(),
+          result:this.result.val().toLowerCase()
+        },
+        { validate: true }
+      );
       this.guess.val('');
       this.result.val('');
     },
