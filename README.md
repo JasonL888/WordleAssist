@@ -34,10 +34,8 @@ Motivation
 | word | result | meaning |
 |------|--------|---------|
 | arise | ppxxx | partial match for "a", "r", no match for "i","s","e"|
-| ultra | xxxmp | exact match for "r", partial match for "a", no match for "u", "l", "t" |
-| dwarf | pxmmx | partial match for "d", exact match for "a","r", no match for "w","f" |
-| board | xmmmm | no match for "b", exact match for "o", "a", "r", "d" |
-| hoard | mmmmm | exact match for all chars |
+| buran | xmppx | exact match for "u", partial match for "a", "r", no match for "b", "n" |
+| quart | mmmmm | exact match for all chars |
 
 ```
 python3 WordleAssist.py
