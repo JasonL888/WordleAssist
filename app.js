@@ -196,9 +196,11 @@ $(function(){
         console.log('display what we have')
         this.$("#word-list").show()
         this.$("#word-list").empty()
+        var lastIndex = this.shortlist.length - 1;
         this.shortlist.forEach(function(item,index){
           this.$("#word-list").append(item);
-          this.$("#word-list").append(", ");
+          if (index != lastIndex)
+              this.$("#word-list").append(", ");
         });
       }
 
