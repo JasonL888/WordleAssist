@@ -124,7 +124,6 @@ $(function(){
       var includeChars = [];
       var excludeChars = [];
       var positionMatch = [];
-      var candidateWords = [];
       // obtain all the models from collection
       // for each model,
       //    look at guess and result char by char
@@ -138,7 +137,7 @@ $(function(){
         var result = model.get("result")
         for (var i=0; i < result.length; i++) {
           if ( result.charAt(i) == 'x' ) {
-            if (!excludeChars.includes(guess.charAt(i)))
+            if (!excludeChars.includes(guess.charAt(i)) && !includeChars.includes(guess.charAt(i)))
             {
               console.log('add excludeChars[' + guess.charAt(i) + ']')
               excludeChars.push(guess.charAt(i));
@@ -161,6 +160,20 @@ $(function(){
               }
             }
             // TBD regex
+            if ( result.charAt(i) == 'm' ) {
+              pattern = ""
+              for( var k=0; k<5; k++) {
+                if (k == i) {
+                  pattern += guess.charAt(i)
+                }
+                else {
+                  pattern += "[a-z]"
+                }
+              }
+              console.log('pattern:' + pattern)
+              positionMatch.push(new RegExp(pattern))
+              console.log('positionMatch:' + positionMatch)
+            }
           }
         }
       });
@@ -171,48 +184,53 @@ $(function(){
       //    - match the regex
       //    if so, add to temp array
       //  set shortlist to temp
-
-      let tempShortList = []
+      let candidateWords = []
       this.shortlist.forEach(function(item,index) {
-        var containIncludes = includeChars.some(element => {
-          if (item.indexOf(element) != -1 ) {
-            return true;
-          }
-          return false;
-        });
-
-        var containExcludes = excludeChars.some(element => {
-          if (item.indexOf(element) != -1 ) {
-            return true;
-          }
-          return false;
-        });
-
+        var containIncludes = includeChars.every((element) => item.indexOf(element) != -1);
+        var containExcludes = excludeChars.some((element)=> item.indexOf(element) != -1);
 
         if (containExcludes) {
           console.log('skip word[' + item + ']')          // skip word
         }
         else {
+          var toAddFlag = false;
           if (includeChars.length == 0) {
-            console.log('no include chars - just add word')
-            tempShortList.push(item)
+            console.log('no include chars')
+            toAddFlag = true;
+            //candidateWords.push(item)
           }
           else {
             if (containIncludes) {
               console.log('found include char - add ['+ item + ']')
-              tempShortList.push(item)
+              toAddFlag = true;
+              //candidateWords.push(item)
+            }
+          }
+          if (toAddFlag){
+            // check with regex
+            if (positionMatch.length == 0) {
+              console.log('no position match - just add')
+              candidateWords.push(item)
+            }
+            else
+            {
+              var patNoMatch = positionMatch.some((patItem) => patItem.test(item) == false);
+              var patMatch = positionMatch.every((patItem) => patItem.test(item) == true);
+              if (!patNoMatch && patMatch) {
+                console.log('pattern match:' + item)
+                candidateWords.push(item)
+              }
             }
           }
         }
         // TBD
       });
 
-      console.log('tempShortList len:' + tempShortList.length)
-      console.log('this.shortlist len:' + this.shortlist.length)
-      this.shortlist = tempShortList.slice()
-      console.log('this.shortlist len:' + this.shortlist.length)
+      console.log('this.shortlist before len:' + this.shortlist.length)
+      this.shortlist = candidateWords.slice()
+      console.log('this.shortlist after len:' + this.shortlist.length)
 
-      if (this.shortlist.length > 100)
+      if (this.shortlist.length > 2000)
       {
         console.log('too many words to display')
         this.$("#word-list").hide()
