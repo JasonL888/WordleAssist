@@ -53,7 +53,7 @@ $(function(){
     el: $("#app_container"),
 
     events: {
-      "keypress #result": "createGuessOnEnter"
+      "keypress #new-guess": "createGuessOnEnter"
     },
 
     initialize: function() {
