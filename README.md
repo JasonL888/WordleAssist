@@ -1,5 +1,9 @@
 # WordleAssist
-Command line tool to assist with Wordle
+Tool to assist with Wordle
+
+2 versions
+* command line version in python
+* browser html version in Backbone JS javascript
 
 Motivation
 * mainly as programming challenge
@@ -7,12 +11,17 @@ Motivation
 # Built With
 * [python 3](https://www.python.org/downloads/)
 * Word list from /usr/share/dict/words
+* [Backbone js](https://backbonejs.org/)
 
 # Getting Started
-## Pre-requisites
+## Browser Version
+Access via [WordleAssist](https://jasonl888.github.io/WordleAssist/)
+
+## Python Command-line Version
+### Pre-requisites
 * install python
 
-## Usage
+### Usage - Python
 `python3 WordleAssist.py`
 
 * You will be
@@ -28,7 +37,7 @@ Motivation
 * Program will display list of possible words
 * Continue with the above prompts word/result
 
-## Sample flow
+### Sample flow
 ![Sample Flow](sampleflow.png)
 
 | word | result | meaning |
@@ -66,7 +75,6 @@ Enter result (m:positional match, p:partial match, x:no match):mmmmm
 
 Congrats! The word is: hoard
 ```
-
 
 # License
 Distributed under Apache License - see `LICENSE`
