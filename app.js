@@ -71,6 +71,11 @@ $(function(){
         this.errorMsg.empty().append(error);
         console.log('error:' + error );
       });
+      this.listenTo(Guesses, 'remove', function(model, error, options) {
+        console.log('received REMOVE event!')
+        // re-add the entire word list as we need to re-filter
+        this.shortlist = shortlistWords.slice();
+      });
 
       Guesses.fetch();
     },
@@ -148,7 +153,7 @@ $(function(){
         else {
           var toAddFlag = false;
           if (includeChars.length == 0) {
-            console.log('no include chars')
+            //console.log('no include chars')
             toAddFlag = true;
           }
           else {
@@ -160,7 +165,7 @@ $(function(){
           if (toAddFlag){
             // check with regex
             if (positionMatch.length == 0) {
-              console.log('no position match - just add')
+              //console.log('no position match - just add')
               candidateWords.push(item)
             }
             else
