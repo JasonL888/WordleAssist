@@ -53,7 +53,8 @@ $(function(){
     el: $("#app_container"),
 
     events: {
-      "keypress #new-guess": "createGuessOnEnter"
+      "keypress #new-guess": "createGuessOnEnter",
+      "keyup #guess": "autoTab"
     },
 
     initialize: function() {
@@ -214,7 +215,7 @@ $(function(){
 
     createGuessOnEnter: function(e) {
       var ENTER_KEY = 13
-      console.log('received:' + e);
+      console.log('createGuessOnEnter:' + JSON.stringify(e));
       //if not Enter keyCode 13
       if (e.keyCode != ENTER_KEY)
         return;
@@ -232,6 +233,13 @@ $(function(){
         this.errorMsg.hide();
       }
     },
+
+    autoTab: function(e) {
+        console.log('autotab:' + JSON.stringify(e))
+        if (this.guess.val().length == 5) {
+          this.result.focus()
+        }
+    }
   });
 
   var App = new AppView;
