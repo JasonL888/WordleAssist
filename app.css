@@ -1,0 +1,89 @@
+
+#app_container h1 {
+	font-size: 36px;
+	font-weight: bold;
+	text-align: center;
+	padding: 0 0 10px 0;
+}
+
+#app_container input[type="text"] {
+	width: 48%;
+	font-size: 24px;
+	font-family: inherit;
+	line-height: 1.4em;
+	border: 0;
+	outline: none;
+	padding: 6px;
+	border: 1px solid #999999;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
+	-moz-box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
+	-ms-box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
+	-o-box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
+	box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
+}
+
+#guess-list li {
+	padding: 18px 20px 18px 0;
+	position: relative;
+	font-size: 24px;
+	border-bottom: 1px solid #cccccc;
+}
+
+#guess-list li:last-child {
+	border-bottom: none;
+}
+
+.guess-row {
+  border: 1px solid black;
+  margin: 1rem;
+  padding: 2rem 2rem;
+  text-align: center;
+}
+.guess-row-item {
+  width: 30%;
+  display: inline-block;
+  border: 1px solid grey;
+  padding: 1rem 1rem;
+  vertical-align: middle;
+}
+
+#guess-list {
+    margin: 10px 0;
+    padding: 0;
+    list-style: none;
+}
+
+#word-list {
+	border: 1px solid black;
+	margin: 1rem;
+	padding: 2rem 2rem;
+	text-align: center;
+}
+
+#instructions {
+  margin: 10px auto;
+  color: #777777;
+  text-shadow: rgb(255 255 255 / 80%) 0 1px 0;
+  text-align: center;
+}
+
+table, th, td {
+  border:1px solid black;
+}
+
+.example {
+	border: none;
+	margin: 1rem;
+	padding: 2rem 2rem;
+	text-align: center;
+}
+img {
+	width: 100%;
+}
+.image, .steps {
+  width: 40%;
+  display: inline-block;
+  border: none;
+  padding: 1rem 1rem;
+  vertical-align: middle;
+}
