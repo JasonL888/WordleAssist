@@ -94,7 +94,9 @@ $(function(){
     initialize: function() {
       this.guess = this.$("#guess");
       this.result = this.$("#result");
-      this.errorMsg = this.$("#error-msg")
+      this.errorMsg = this.$("#error-msg");
+      this.shortlist = shortlistWords.slice();
+      this.wordlist = this.$("#word-list");
 
       this.listenTo(Guesses, 'add', this.addOneGuess);
       this.listenTo(Guesses, 'reset', this.addAllGuess);
@@ -107,7 +109,7 @@ $(function(){
 
       Guesses.fetch();
 
-      this.wordlist = this.$("#word-list")
+
 
       //this.listenTo(Words, 'add', this.addOneWord);
       //this.listenTo(Words, 'reset', this.addAllWords);
@@ -119,6 +121,112 @@ $(function(){
     },
 
     render: function() {
+      var includeChars = [];
+      var excludeChars = [];
+      var positionMatch = [];
+      var candidateWords = [];
+      // obtain all the models from collection
+      // for each model,
+      //    look at guess and result char by char
+      //    if a character is 'x' - add to excludeChar list
+      //    if a character is either 'p' or 'm' - add to includeChar list
+      //    if a character is 'm' - create position match regex
+      Guesses.each(function(model) {
+        //console.log('model:' + JSON.stringify(model));
+        console.log('guess:' + model.get("guess"))
+        var guess = model.get("guess")
+        var result = model.get("result")
+        for (var i=0; i < result.length; i++) {
+          if ( result.charAt(i) == 'x' ) {
+            if (!excludeChars.includes(guess.charAt(i)))
+            {
+              console.log('add excludeChars[' + guess.charAt(i) + ']')
+              excludeChars.push(guess.charAt(i));
+            }
+          }
+          else if ( result.charAt(i) == 'm' || result.charAt(i) == 'p')
+          {
+            console.log('found m or p in result')
+            if (!includeChars.includes(guess.charAt(i)))
+            {
+              console.log('add includeChars[' + guess.charAt(i) + ']')
+              includeChars.push(guess.charAt(i))
+            }
+            // check and remove if same char in excludeChar - happens when word has double letters
+            if (excludeChars.includes(guess.charAt(i))){
+              for( var j=0; j < excludeChars.length; j++ ){
+                if ( excludeChars[j] == guess.charAt(j) ) {
+                  excludeChars.splice(j,1);
+                }
+              }
+            }
+            // TBD regex
+          }
+        }
+      });
+      // for each shortlist word,
+      //    check if
+      //    - it has includeChar and
+      //    - does not have excludeChar
+      //    - match the regex
+      //    if so, add to temp array
+      //  set shortlist to temp
+
+      let tempShortList = []
+      this.shortlist.forEach(function(item,index) {
+        var containIncludes = includeChars.some(element => {
+          if (item.indexOf(element) != -1 ) {
+            return true;
+          }
+          return false;
+        });
+
+        var containExcludes = excludeChars.some(element => {
+          if (item.indexOf(element) != -1 ) {
+            return true;
+          }
+          return false;
+        });
+
+
+        if (containExcludes) {
+          console.log('skip word[' + item + ']')          // skip word
+        }
+        else {
+          if (includeChars.length == 0) {
+            console.log('no include chars - just add word')
+            tempShortList.push(item)
+          }
+          else {
+            if (containIncludes) {
+              console.log('found include char - add ['+ item + ']')
+              tempShortList.push(item)
+            }
+          }
+        }
+        // TBD
+      });
+
+      console.log('tempShortList len:' + tempShortList.length)
+      console.log('this.shortlist len:' + this.shortlist.length)
+      this.shortlist = tempShortList.slice()
+      console.log('this.shortlist len:' + this.shortlist.length)
+
+      if (this.shortlist.length > 100)
+      {
+        console.log('too many words to display')
+        this.$("#word-list").hide()
+      }
+      else
+      {
+        console.log('display what we have')
+        this.$("#word-list").show()
+        this.$("#word-list").empty()
+        this.shortlist.forEach(function(item,index){
+          this.$("#word-list").append(item);
+          this.$("#word-list").append(", ");
+        });
+      }
 
     },
 
