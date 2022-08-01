@@ -1,5 +1,4 @@
 $(function(){
-  console.log('enter ready')
   var Guess = Backbone.Model.extend({
     defaults: function() {
       return {
@@ -50,40 +49,6 @@ $(function(){
     }
   });
 
-  //var Word = Backbone.Model.extend({
-  //  defaults: function() {
-  //    return {
-  //      word: "arise",
-  //      order: Words.nextOrder()
-  //    };
-  //  }
-  //});
-
-  //var WordList = Backbone.Collection.extend({
-  //  model: Word,
-  //  localStorage: new Backbone.LocalStorage("word-list"),
-  //  nextOrder: function() {
-  //    if (!this.length) return 1;
-  //    return this.last().get('order') + 1;
-  //  },
-  //  comparator: 'order'
-  //});
-
-  //var Words = new WordList
-
-  //var WordView = Backbone.View.extend({
-  //  tagName: "div",
-  //  template: _.template($('#word-item-template').html()),
-  //  events: {},
-  //  initialize: function() {
-  //    this.listenTo(this.model, 'change', this.render);
-  //  },
-  //  render: function() {
-  //    this.$el.html(this.template(this.model.toJSON()));
-  //    return this;
-  //  }
-  //});
-
   var AppView = Backbone.View.extend({
     el: $("#app_container"),
 
@@ -108,16 +73,6 @@ $(function(){
       });
 
       Guesses.fetch();
-
-
-
-      //this.listenTo(Words, 'add', this.addOneWord);
-      //this.listenTo(Words, 'reset', this.addAllWords);
-      //this.listenTo(Words, 'all', this.render);
-
-      //shortlistWords.forEach(function(item,index){
-      //  Words.create({word:item});
-      //});
     },
 
     render: function() {
@@ -131,7 +86,6 @@ $(function(){
       //    if a character is either 'p' or 'm' - add to includeChar list
       //    if a character is 'm' - create position match regex
       Guesses.each(function(model) {
-        //console.log('model:' + JSON.stringify(model));
         console.log('guess:' + model.get("guess"))
         var guess = model.get("guess")
         var result = model.get("result")
@@ -159,7 +113,6 @@ $(function(){
                 }
               }
             }
-            // TBD regex
             if ( result.charAt(i) == 'm' ) {
               pattern = ""
               for( var k=0; k<5; k++) {
@@ -197,13 +150,11 @@ $(function(){
           if (includeChars.length == 0) {
             console.log('no include chars')
             toAddFlag = true;
-            //candidateWords.push(item)
           }
           else {
             if (containIncludes) {
               console.log('found include char - add ['+ item + ']')
               toAddFlag = true;
-              //candidateWords.push(item)
             }
           }
           if (toAddFlag){
@@ -223,7 +174,6 @@ $(function(){
             }
           }
         }
-        // TBD
       });
 
       console.log('this.shortlist before len:' + this.shortlist.length)
@@ -277,17 +227,7 @@ $(function(){
         this.errorMsg.hide();
       }
     },
-
-    //addOneWord: function(Word) {
-    //  var wordview = new WordView({model:Word});
-    //  this.$("#word-list").append(wordview.render().el);
-    //},
-
-    //addAllWords: function() {
-    //  Words.each(this.addOneWord, this);
-    //}
   });
 
   var App = new AppView;
-  console.log('exit ready')
 });
