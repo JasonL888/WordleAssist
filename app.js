@@ -84,7 +84,9 @@ $(function(){
     render: function() {
       var includeChars = [];
       var excludeChars = [];
+      var excludeMultiChars = [];
       var positionMatch = [];
+
       // obtain all the models from collection
       // for each model,
       //    look at guess and result char by char
@@ -92,15 +94,27 @@ $(function(){
       //    if a character is either 'p' or 'm' - add to includeChar list
       //    if a character is 'm' - create position match regex
       Guesses.each(function(model) {
-        console.log('guess:' + model.get("guess"))
-        var guess = model.get("guess")
-        var result = model.get("result")
+        console.log('guess:' + model.get("guess"));
+        var guess = model.get("guess");
+        var result = model.get("result");
         for (var i=0; i < result.length; i++) {
           if ( result.charAt(i) == 'x' ) {
-            if (!excludeChars.includes(guess.charAt(i)) && !includeChars.includes(guess.charAt(i)))
+            if (!excludeChars.includes(guess.charAt(i)))
             {
-              console.log('add excludeChars[' + guess.charAt(i) + ']')
-              excludeChars.push(guess.charAt(i));
+              if (!includeChars.includes(guess.charAt(i)))
+              {
+                console.log('add excludeChars[' + guess.charAt(i) + ']');
+                excludeChars.push(guess.charAt(i));
+              }
+              else
+              {
+                // case of double char in guess word,
+                // eg. colon but actual word only has 1 O
+                // => need to exclude any word with 2 Os
+                console.log('add excludeMultiChars[' + guess.charAt(i)+ ']')
+                excludeMultiChars.push(guess.charAt(i));
+
+              }
             }
           }
           else if ( result.charAt(i) == 'm' || result.charAt(i) == 'p')
@@ -147,8 +161,9 @@ $(function(){
       this.shortlist.forEach(function(item,index) {
         var containIncludes = includeChars.every((element) => item.indexOf(element) != -1);
         var containExcludes = excludeChars.some((element)=> item.indexOf(element) != -1);
+        var containMultiChars = excludeMultiChars.some((element) => (item.split(element).length - 1) > 1);
 
-        if (containExcludes) {
+        if (containExcludes || containMultiChars ) {
           console.log('skip word[' + item + ']')          // skip word
         }
         else {
