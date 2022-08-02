@@ -223,7 +223,7 @@ $(function(){
 
     addOneGuess: function(Guess) {
       var guessview = new GuessView({model:Guess});
-      this.$("#guess-list").append(guessview.render().el);
+      this.$("#guess-list").prepend(guessview.render().el);
     },
 
     addAllGuess: function() {
@@ -232,7 +232,7 @@ $(function(){
 
     createGuessOnEnter: function(e) {
       var ENTER_KEY = 13
-      console.log('createGuessOnEnter:' + JSON.stringify(e));
+      //console.log('createGuessOnEnter:' + JSON.stringify(e));
       //if not Enter keyCode 13
       if (e.keyCode != ENTER_KEY)
         return;
@@ -253,7 +253,7 @@ $(function(){
     },
 
     autoTab: function(e) {
-        console.log('autotab:' + JSON.stringify(e))
+        //console.log('autotab:' + JSON.stringify(e))
         if (this.guess.val().length == 5) {
           this.result.focus()
         }
