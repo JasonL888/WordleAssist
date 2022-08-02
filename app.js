@@ -61,6 +61,7 @@ $(function(){
       this.guess = this.$("#guess");
       this.result = this.$("#result");
       this.errorMsg = this.$("#error-msg");
+      this.errorMsg.hide();
       this.shortlist = shortlistWords.slice();
       this.wordlist = this.$("#word-list");
 
