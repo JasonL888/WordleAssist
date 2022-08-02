@@ -246,6 +246,7 @@ $(function(){
         { validate: true }
       ) != false ) {
         this.guess.val('');
+        this.guess.focus();
         this.result.val('');
         this.errorMsg.hide();
       }
