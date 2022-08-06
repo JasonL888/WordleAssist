@@ -87,6 +87,7 @@ $(function(){
       var excludeChars = [];
       var excludeMultiChars = [];
       var positionMatch = [];
+      var partialPositionMatch = [];
 
       // obtain all the models from collection
       // for each model,
@@ -134,19 +135,26 @@ $(function(){
                 }
               }
             }
-            if ( result.charAt(i) == 'm' ) {
-              pattern = ""
-              for( var k=0; k<5; k++) {
-                if (k == i) {
-                  pattern += guess.charAt(i)
-                }
-                else {
-                  pattern += "[a-z]"
-                }
+
+            // form the regex for m and p
+            pattern = ""
+            for( var k=0; k<5; k++) {
+              if (k == i) {
+                pattern += guess.charAt(i)
               }
-              console.log('pattern:' + pattern)
+              else {
+                pattern += "[a-z]"
+              }
+            }
+            console.log('pattern:' + pattern)
+            if ( result.charAt(i) == 'm') {
               positionMatch.push(new RegExp(pattern))
               console.log('positionMatch:' + positionMatch)
+            }
+            else {
+              // ie. 'p'
+              partialPositionMatch.push(new RegExp(pattern))
+              console.log('partialPositionMatch:' + partialPositionMatch)
             }
           }
         }
@@ -191,7 +199,12 @@ $(function(){
               var patMatch = positionMatch.every((patItem) => patItem.test(item) == true);
               if (!patNoMatch && patMatch) {
                 console.log('pattern match:' + item)
-                candidateWords.push(item)
+
+                var partPatNoMatch = partialPositionMatch.every((patItem) => patItem.test(item) == false);
+                if (partPatNoMatch) {
+                  console.log('No partial match:' + item)
+                  candidateWords.push(item)
+                }
               }
             }
           }
