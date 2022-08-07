@@ -189,23 +189,33 @@ $(function(){
           }
           if (toAddFlag){
             // check with regex
-            if (positionMatch.length == 0) {
-              //console.log('no position match - just add')
+            if (positionMatch.length == 0 && partialPositionMatch.length == 0) {
+              console.log('since no patterns - just add')
               candidateWords.push(item)
             }
             else
             {
+              // if patterns exist,
+              //     add only f all patterns match
+              //     reject if at least one pattern don't match
+              // if partial pattern exist,
+              //     add only if word does not match all patterns
+              //     reject if at least one pattern match
               var patNoMatch = positionMatch.some((patItem) => patItem.test(item) == false);
-              var patMatch = positionMatch.every((patItem) => patItem.test(item) == true);
-              if (!patNoMatch && patMatch) {
-                console.log('pattern match:' + item)
-
-                var partPatNoMatch = partialPositionMatch.every((patItem) => patItem.test(item) == false);
-                if (partPatNoMatch) {
-                  console.log('No partial match:' + item)
-                  candidateWords.push(item)
-                }
+              if ( positionMatch.length > 0 && patNoMatch ) {
+                console.log('pattern exists and at least one not matching so skip:' + item)
+                return;
               }
+
+              var partPatMatch = partialPositionMatch.some((patItem) => patItem.test(item) == true);
+              if ( partialPositionMatch.length > 0 && partPatMatch ) {
+                console.log('partial pattern exist and at least one matching so skip:' + item)
+                return;
+              }
+
+              console.log('either pattern match or all partial pattern not matching, so add:' + item)
+              candidateWords.push(item)
+
             }
           }
         }
